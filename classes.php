@@ -2,17 +2,43 @@
 class user{
     public $username;
     public $password;
-    public function __construct() {
-        $this->username = null;
-        $this->password = null;
+    private $link;
+    public function __construct($username,$password,$link) {
+        $this->username =$username ;
+        $this->password = $password;
+        $this->link=$link;
     }
     function updatepassword(){
-        
     }
-    public function login( $username ,  $password){
-        $sql="SELECT usertype from user where username='$param_username' and password='$param_password'";
+    public function login(){ 
+    $username_err = $password_err= 0;
+    $input_username = trim($this->username);
+    if(empty($input_username)){
+        $username_err = 1;
+    } 
+    elseif(!filter_var($input_username, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^[a-zA-Z\s]+$/")))){
+        $username_err = 1;
     }
+    $input_password = trim($this->password);
+    if(empty($input_password)){
+        $password_err = 1;     
+    }
+   if($username_err==0 && $password_err==0){
+    $sql= "SELECT * FROM user WHERE username= '$this->username' AND password= '$this->password'";
+    $result = mysqli_query($this->link,$sql);
+    $row = mysqli_fetch_assoc($result);
+    if(mysqli_num_rows($result) >0){
+        $_SESSION["login"]=true;
+        $_SESSION["id"]=$this->username;
+        $_SESSION["usertype"]=$row["usertype"];
 }
+else{
+    return"error";
+}
+}
+}
+}
+
 class doc extends user{
     function updatepatientfile(){
 
